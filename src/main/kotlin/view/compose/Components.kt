@@ -72,17 +72,34 @@ fun OptionBox(
 
 
 @Composable
-fun ExportInfoCard() {
+fun ExportInfoCard(exportPath:String, currentOperationText:String) {
     Card(
-        modifier = Modifier.fillMaxWidth().height(50.dp),
+        modifier = Modifier.fillMaxWidth().height(75.dp),
         shape = RoundedCornerShape(5.dp),
         border = BorderStroke(1.5.dp, royalBlue),
         elevation = 5.dp
     ) {
         Row(
-            modifier = Modifier.fillMaxSize().padding(5.dp)
+            modifier = Modifier.fillMaxSize().padding(15.dp),
         ) {
-            Text("asdasdada")
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator(
+                    color = royalBlue,
+                    strokeWidth = 5.dp
+                )
+            }
+            Spacer(Modifier.width(20.dp))
+            Column(
+                modifier = Modifier.weight(2F).fillMaxSize(),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text("Creating output file on: '$exportPath'", style = MaterialTheme.typography.body2)
+                Spacer(Modifier.height(4.dp))
+                Text(currentOperationText, style = MaterialTheme.typography.body2, color = Color.LightGray)
+            }
         }
     }
 }

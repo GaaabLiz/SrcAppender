@@ -33,10 +33,12 @@ fun App() {
     val btnAddFileEnabledStatus by remember { mutableStateOf(true) }
     val btnAddSepEnabledStatus by remember { mutableStateOf(true) }
     var exportBannerVisible by remember { mutableStateOf(false) }
+    var exportBannerOperationStatus by remember { mutableStateOf("Loading...") }
     var errorDialogVisible by remember { mutableStateOf(false) }
     var errorDialogText by remember { mutableStateOf("") }
     var successDialogVisible by remember { mutableStateOf(false) }
     var successDialogText by remember { mutableStateOf("") }
+    var exportPath by remember { mutableStateOf("") }
 
     val actionList = remember {
         mutableStateListOf<Action>()
@@ -99,7 +101,7 @@ fun App() {
                                     hideBanner = { exportBannerVisible = false },
                                 )
                             } else {
-                                errorDialogText = "File list is empty."
+                                errorDialogText = "File list is empty. Add some file and try again."
                                 errorDialogVisible = true
                             }
                         }
@@ -114,7 +116,7 @@ fun App() {
         ) {
             if(errorDialogVisible) DialogCard(DialogCardType.ERROR, errorDialogText)
             if(successDialogVisible) DialogCard(DialogCardType.SUCCESS, successDialogText)
-            if(exportBannerVisible) ExportInfoCard()
+            if(exportBannerVisible) ExportInfoCard(exportPath, exportBannerOperationStatus)
         }
         LazyColumn(
             modifier = Modifier
