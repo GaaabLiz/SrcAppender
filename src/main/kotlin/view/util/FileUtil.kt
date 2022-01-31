@@ -1,18 +1,15 @@
 package view.util
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
+import view.compose.DialogCardType
 import view.model.Action
 import view.model.ActionType
 import java.awt.FileDialog
 import java.awt.Frame
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileNotFoundException
-import java.io.IOException
-import java.lang.RuntimeException
-import java.nio.file.FileSystems
-import java.nio.file.Files
-import java.nio.file.Path
+import java.io.*
+import java.nio.file.*
 
 
 object FileUtil {
@@ -31,27 +28,111 @@ object FileUtil {
         }
     }
 
+    private fun openDialogAndGetSaveDir() : File? {
+        val dialog = FileDialog(null as Frame?, "Select output destination")
+        dialog.mode = FileDialog.SAVE
+        dialog.isMultipleMode = false
+        dialog.isVisible = true
+        return try {
+            return File(dialog.directory + "/" + dialog.file)
+        }catch (e : NoSuchElementException) {
+            null
+        }
+    }
+
     suspend fun createOutputFile(
         acList:List<Action>,
         showBanner: () -> Unit,
         hideBanner: () -> Unit,
+        changeStatusText: (String) -> Unit,
+        callDialog: (Boolean, DialogCardType, String?) -> Unit,
+        onEnded : () -> Unit
     ) {
+
+        /* get save dir */
+        val f = openDialogAndGetSaveDir()
+        println("output dir = '${f?.path}'")
 
         /* show banner */
         showBanner()
+        delay(500)
+
+        /* checking file object */
+        changeStatusText("Checking output dir...")
+        if(f == null) {
+            callDialog(true, DialogCardType.ERROR, "Unable to retrive output file location path.")
+            return
+        }
 
         /* loading things */
         delay(1000)
 
+        /* creating and opening output file */
+        var fw : FileWriter
+        try {
+            withContext(Dispatchers.IO){
+                fw = FileWriter(f, true)
+                fw.close()
+            }
+        }catch (e : IOException) {
+            callDialog(true, DialogCardType.ERROR, "An error occurred while opening output director.")
+            return
+        }
+
+
         /* scanning file types */
         acList.forEach{
             if(it.type == ActionType.ACTION_ADD_FILE) {
+
+                /* log */
+                println("Start checking file '${it.filePath}'")
+                changeStatusText("Checking '${it.fileName}'...")
+                delay(500)
+
+                /* checking file */
+                if(it.filePath == null) {
+                    callDialog(true, DialogCardType.ERROR, "An error occurred while checking file '${it.fileName}'. This file will be skipped.")
+                    return@forEach
+                }
+                if(!it.filePath!!.exists()) {
+                    callDialog(true, DialogCardType.ERROR, "The '${it.fileName}' doesn't exists!. This file will be skipped.")
+                    return@forEach
+                }
+                if(!it.filePath!!.canRead()) {
+                    callDialog(true, DialogCardType.ERROR, "The file '${it.fileName}' cannot be read. This file will be skipped.")
+                    return@forEach
+                }
+
+                /* reading file lines */
+                println("Start reading file '${it.filePath}'")
+                changeStatusText("Reading '${it.fileName}'...")
+                delay(500)
+                val fileLines = it.filePath!!.readLines()
+                println("File '${it.fileName}' has ${fileLines.size} lines.")
+
+                /* for each line append to the output file */
+                println("Start writing file '${it.filePath}' to the output file.")
+                changeStatusText("Appending '${it.fileName}' to the output file...")
+                fw = FileWriter(f, true)
+                fileLines.forEach { line ->
+                    println("I'm writing line -> {$line}.")
+                    fw.write("$line\n")
+                }
+                fw.close()
+                delay(500)
+                println("File '${it.filePath}' was appended to the output file.")
+
+            } else {
 
             }
         }
 
         /* hide banner */
         hideBanner()
+        onEnded()
+
+        /* show dialog */
+        callDialog(true, DialogCardType.SUCCESS, "All the file are successfully appended to the output file.")
     }
 
     @Throws(FileNotFoundException::class, IOException::class)

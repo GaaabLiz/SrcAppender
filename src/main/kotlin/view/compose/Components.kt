@@ -136,3 +136,4 @@ fun DialogCard(
 }
 
 enum class DialogCardType {ERROR, SUCCESS}
+enum class DialogCardViewOption {SHOW, HIDE}

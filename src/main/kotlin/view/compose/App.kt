@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircleOutline
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.PostAdd
 import androidx.compose.material.icons.filled.Segment
 import androidx.compose.runtime.*
@@ -30,8 +31,10 @@ import view.util.FileUtil
 @Composable
 @Preview
 fun App() {
-    val btnAddFileEnabledStatus by remember { mutableStateOf(true) }
-    val btnAddSepEnabledStatus by remember { mutableStateOf(true) }
+    var btnAddFileEnabledStatus by remember { mutableStateOf(true) }
+    var btnAddSepEnabledStatus by remember { mutableStateOf(true) }
+    var btnExportEnabledStatus by remember { mutableStateOf(true) }
+    var btnResetAllVisible by remember { mutableStateOf(false) }
     var exportBannerVisible by remember { mutableStateOf(false) }
     var exportBannerOperationStatus by remember { mutableStateOf("Loading...") }
     var errorDialogVisible by remember { mutableStateOf(false) }
@@ -84,21 +87,58 @@ fun App() {
                     AddSeparatorWindow(isSepWindowOpen, {isSepWindowOpen = false}) {
                         actionList.add(it)
                     }
+                    if(btnResetAllVisible) {
+                        Spacer(Modifier.width(20.dp))
+                        Btn(
+                            text = "Reset",
+                            type = BtnType.BTN_ACTION,
+                            imageVectorIcon = Icons.Filled.Clear,
+                            true
+                        ) {
+                            btnResetAllVisible = false
+                            btnAddSepEnabledStatus = true
+                            btnAddFileEnabledStatus = true
+                            btnExportEnabledStatus = true
+                            actionList.clear()
+                            successDialogVisible = false
+                            errorDialogVisible = false
+                        }
+                    }
                 }
                 Row {
                     Btn(
                         text = "Create output file",
                         type = BtnType.BTN_ACTION_FINAL,
                         imageVectorIcon = Icons.Filled.PostAdd,
-                        btnAddSepEnabledStatus
+                        btnExportEnabledStatus
                     ) {
                         CoroutineScope(IO).launch {
                             if(actionList.isNotEmpty()) {
                                 errorDialogVisible = false
+                                successDialogVisible = false
                                 FileUtil.createOutputFile(
                                     acList = actionList.toList(),
                                     showBanner = { exportBannerVisible = true },
                                     hideBanner = { exportBannerVisible = false },
+                                    changeStatusText = { exportBannerOperationStatus = it },
+                                    callDialog = { viewOption, dialogType, dialogText ->
+                                        when(dialogType) {
+                                            DialogCardType.SUCCESS -> {
+                                                successDialogVisible = viewOption
+                                                successDialogText = dialogText.toString()
+                                            }
+                                            DialogCardType.ERROR -> {
+                                                errorDialogVisible = viewOption
+                                                errorDialogText = dialogText.toString()
+                                            }
+                                        }
+                                    },
+                                    onEnded = {
+                                        btnAddSepEnabledStatus = false
+                                        btnAddFileEnabledStatus = false
+                                        btnExportEnabledStatus = false
+                                        btnResetAllVisible = true
+                                    }
                                 )
                             } else {
                                 errorDialogText = "File list is empty. Add some file and try again."
