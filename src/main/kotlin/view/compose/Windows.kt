@@ -39,6 +39,8 @@ fun AddSeparatorWindow(
     var optionLinesBfErrorStatus by remember { mutableStateOf(true) }
     var optionLinesAf by remember { mutableStateOf("") }
     var optionLinesAfErrorStatus by remember { mutableStateOf(true) }
+    var optionSepRowLength by remember { mutableStateOf("") }
+    var optionSepRowLengthErrorStatus by remember { mutableStateOf(true) }
     val icon = painterResource("logo.png")
 
     if (isWindowOpened) {
@@ -93,6 +95,16 @@ fun AddSeparatorWindow(
                         optionLinesAf = it
                         optionLinesAfErrorStatus = ValidationUtil.validateNumber(optionLinesAf)
                     }
+                    OptionBox(
+                        optionTitleName = "Row length",
+                        value = optionSepRowLength,
+                        isNumber = false,
+                        errorMessage = "Must be a positive number.",
+                        optionSepRowLengthErrorStatus
+                    ) {
+                        optionSepRowLength = it
+                        optionSepRowLengthErrorStatus = ValidationUtil.validateNumber(optionSepRowLength)
+                    }
 
                 }
 
@@ -107,6 +119,7 @@ fun AddSeparatorWindow(
                                 separatorTitle = optionSepName
                                 separatorLinesAf = optionLinesAf.toInt()
                                 separatorLinesBf = optionLinesBf.toInt()
+                                separatorRowLength = optionSepRowLength.toInt()
                             }
                             onSepCreated(ac)
                             onCloseClicked()

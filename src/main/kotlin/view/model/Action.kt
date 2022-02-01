@@ -14,6 +14,7 @@ data class Action(
     var separatorTitle:String? = null,
     var separatorLinesBf:Int? = null,
     var separatorLinesAf:Int? = null,
+    var separatorRowLength:Int? = null,
 ) {
 
     fun getTitle() = when(type) {
