@@ -2,28 +2,22 @@ package view.compose
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.key.Key.Companion.Window
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import view.model.Action
 import view.model.ActionType
 import view.theme.titanWhite
-import view.util.AppConfig
-import view.util.ValidationType
 import view.util.ValidationUtil
 
 @Composable
@@ -47,7 +41,7 @@ fun AddSeparatorWindow(
         Window(
             onCloseRequest = { onCloseClicked() },
             state = WindowState(size = DpSize(400.dp, 700.dp)),
-            title = "Add separator",
+            title = "Add dection separator",
             icon = icon,
             resizable = false,
             alwaysOnTop = false
@@ -61,7 +55,7 @@ fun AddSeparatorWindow(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "ADD SEPARATOR",
+                        text = "ADD SECTION",
                         style = MaterialTheme.typography.h5,
                         textAlign = TextAlign.Center
                     )
@@ -115,7 +109,7 @@ fun AddSeparatorWindow(
                     Btn("ADD", BtnType.BTN_ACTION_FINAL, Icons.Filled.Save,true) {
                         val someErrors = optionLinesAfErrorStatus || optionLinesBfErrorStatus || optionSepNameErrorStatus
                         if(!someErrors) {
-                            val ac = Action(ActionType.ACTION_ADD_SEP).apply {
+                            val ac = Action(ActionType.ACTION_ADD_SEC_SEP).apply {
                                 separatorTitle = optionSepName
                                 separatorLinesAf = optionLinesAf.toInt()
                                 separatorLinesBf = optionLinesBf.toInt()

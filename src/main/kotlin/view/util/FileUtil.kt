@@ -9,6 +9,7 @@ import view.model.Action
 import view.model.ActionType
 import view.util.AppConfig.SEP_CHAR_1
 import view.util.AppConfig.SEP_CHAR_2
+import view.util.AppConfig.SEP_CHAR_3
 import view.util.AppConfig.SEP_CHAR_SPACE
 import java.awt.FileDialog
 import java.awt.Frame
@@ -127,11 +128,11 @@ object FileUtil {
                 delay(500)
                 println("File '${it.filePath}' was appended to the output file.")
 
-            } else {
+            } else if (it.type == ActionType.ACTION_ADD_SEC_SEP) {
 
                 /* log */
-                changeStatusText("Generating separator...")
-                delay(500)
+                changeStatusText("Generating section separator...")
+                delay(400)
 
                 /* cheking numbers */
                 val cond1 = it.separatorLinesBf == null
@@ -159,6 +160,22 @@ object FileUtil {
                     fw.write(line + "\n")
                 }
                 fw.close()
+
+            } else {
+
+                /* log */
+                changeStatusText("Generating file separator...")
+                delay(200)
+
+                val line = getSepFileLine()
+
+                changeStatusText("Appending separator to the output file...")
+                fw = FileWriter(f, true)
+                println("I'm writing line -> {$line}.")
+                fw.write(line + "\n")
+
+                fw.close()
+
             }
         }
 
@@ -244,7 +261,7 @@ object FileUtil {
         val s = StringBuilder()
         s.append(SEP_CHAR_1)
         for (i in 0 until  (rowLength - 2) ) {
-            s.append(SEP_CHAR_2)
+            s.append(SEP_CHAR_3)
         }
         s.append(SEP_CHAR_1)
         return s.toString()
@@ -253,14 +270,26 @@ object FileUtil {
     private fun getSepTitleLine(sepTitle: String, rowLength: Int) : String {
         val s = StringBuilder()
         s.append(SEP_CHAR_1)
-        s.append(SEP_CHAR_2)
+        s.append(SEP_CHAR_3)
         s.append(SEP_CHAR_SPACE)
         s.append(sepTitle.toUpperCase())
         for (i in 0 until  (rowLength - 5 - sepTitle.length) ) {
             s.append(SEP_CHAR_SPACE)
         }
-        s.append(SEP_CHAR_2)
+        s.append(SEP_CHAR_3)
         s.append(SEP_CHAR_1)
+        return s.toString()
+    }
+
+    private fun getSepFileLine(rowLength: Int = 80) : String {
+        val s = StringBuilder()
+        s.append("\n")
+        s.append(SEP_CHAR_1)
+        for (i in 0 until  (rowLength - 2) ) {
+            s.append(SEP_CHAR_2)
+        }
+        s.append(SEP_CHAR_1)
+        s.append("\n")
         return s.toString()
     }
 

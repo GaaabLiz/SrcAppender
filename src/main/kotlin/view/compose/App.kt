@@ -7,10 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircleOutline
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.PostAdd
-import androidx.compose.material.icons.filled.Segment
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +30,7 @@ import view.util.FileUtil
 fun App() {
     var btnAddFileEnabledStatus by remember { mutableStateOf(true) }
     var btnAddSepEnabledStatus by remember { mutableStateOf(true) }
+    var btnAddSepFileEnabledStatus by remember { mutableStateOf(true) }
     var btnExportEnabledStatus by remember { mutableStateOf(true) }
     var btnResetAllVisible by remember { mutableStateOf(false) }
     var exportBannerVisible by remember { mutableStateOf(false) }
@@ -77,12 +75,22 @@ fun App() {
                     }
                     Spacer(Modifier.width(20.dp))
                     Btn(
-                        text = "Add separator",
+                        text = "Add section separator",
                         type = BtnType.BTN_ACTION,
-                        imageVectorIcon = Icons.Filled.Segment,
+                        imageVectorIcon = Icons.Filled.GridView,
                         btnAddSepEnabledStatus
                     ) {
                         isSepWindowOpen = true
+                    }
+                    Spacer(Modifier.width(20.dp))
+                    Btn(
+                        text = "Add file separator",
+                        type = BtnType.BTN_ACTION,
+                        imageVectorIcon = Icons.Filled.Segment,
+                        btnAddSepFileEnabledStatus
+                    ) {
+                        val ac = Action(ActionType.ACTION_ADD_FILE_SEP)
+                        actionList.add(ac)
                     }
                     AddSeparatorWindow(isSepWindowOpen, {isSepWindowOpen = false}) {
                         actionList.add(it)
@@ -97,6 +105,7 @@ fun App() {
                         ) {
                             btnResetAllVisible = false
                             btnAddSepEnabledStatus = true
+                            btnAddSepFileEnabledStatus = true
                             btnAddFileEnabledStatus = true
                             btnExportEnabledStatus = true
                             actionList.clear()
@@ -135,6 +144,7 @@ fun App() {
                                     },
                                     onEnded = {
                                         btnAddSepEnabledStatus = false
+                                        btnAddSepFileEnabledStatus = false
                                         btnAddFileEnabledStatus = false
                                         btnExportEnabledStatus = false
                                         btnResetAllVisible = true
