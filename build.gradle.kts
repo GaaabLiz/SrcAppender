@@ -36,6 +36,17 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "SrcAppender"
             packageVersion = "1.0.0"
+            description = "Source code file appender."
+            linux{
+                appCategory = "productivity"
+                menuGroup = "SrcAppender"
+                iconFile.set(project.file("logo.png"))
+            }
+            windows {
+                dirChooser = true
+                menuGroup = "SrcAppender"
+                iconFile.set(project.file("logo.ico"))
+            }
         }
     }
 }
